@@ -6,6 +6,8 @@ public class Root : MonoBehaviour
 {
 
     private GameObject[] _points;
+
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -72,27 +74,64 @@ public class Root : MonoBehaviour
         {
             return dist;
         }
-        
-        float midPoint;
-        midPoint = (array[0].transform.position.x + array[array.Length-1].transform.position.x);
-        if(midPoint != 0)
+
+        //float midPoint;
+        //midPoint = (array[0].transform.position.x + array[array.Length-1].transform.position.x);
+        //if(midPoint != 0)
+        //{
+        //    midPoint = midPoint / 2;
+        //}
+
+        int midPoint;
+
+        midPoint = array.Length / 2;
+
+        GameObject[] array1;
+        array1 = new GameObject[midPoint];
+        GameObject[] array2;
+        array2 = new GameObject[array.Length - midPoint];
+
+
+        for (int i = 0; i < midPoint; i++)
         {
-            midPoint = midPoint / 2;
+            array1[i] = array[i]; 
         }
 
-        for (int i = 0; i < array.Length; i++)
+        for (int i = midPoint; i < array.Length; i++)
         {
-            if(array[i].transform.position.x < midPoint)
-            {
+            array2[i-midPoint] = array[i];
+        }
 
+        float d1, d2, d3;
+
+        d1 = ClosestPoint(array1);
+        d2 = ClosestPoint(array2);
+        d3 = Vector3.Distance(array1[array1.Length - 1].transform.position, array2[0].transform.position);
+
+        if(d1 < d2)
+        {
+            if(d1 < d3)
+            {
+                dist = d1;
             }
             else
             {
-
+                dist = d3;
             }
         }
 
-        
-        return 0f;
+        if (d2 < d1)
+        {
+            if (d2 < d3)
+            {
+                dist = d2;
+            }
+            else
+            {
+                dist = d3;
+            }
+        }
+
+        return dist;
     }
 }
