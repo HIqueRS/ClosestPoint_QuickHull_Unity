@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ConfigMax;
 
 public class Root : MonoBehaviour
 {
 
     private GameObject[] _points;
+    [SerializeField] private PairOfPoints _pop;
 
 
     // Start is called before the first frame update
@@ -20,6 +22,10 @@ public class Root : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Return))
         {
             CreateArray();
+
+            _pop = ClosestPoint(_points);
+            _pop.point1.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            _pop.point2.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
 
@@ -60,19 +66,31 @@ public class Root : MonoBehaviour
         }
     }
 
-    private float ClosestPoint(GameObject[] array)
+    private PairOfPoints ClosestPoint(GameObject[] array)
     {
+        PairOfPoints pmin;
         float dist;
         dist = float.MaxValue;
+
+        pmin.distance = dist;
+        pmin.point1 = null;
+        pmin.point2 = null;
+       
 
         if(array.Length == 2)
         {
             dist = Vector3.Distance(array[0].transform.position, array[1].transform.position);
-            return dist;
+
+            pmin.point1 = array[0];
+            pmin.point2 = array[1];
+            pmin.distance = dist;
+            return pmin;
         }
-        else if(array.Length == 1)
+        else if(array.Length <= 1)
         {
-            return dist;
+            pmin.distance = dist;
+
+            return pmin;
         }
 
         //float midPoint;
@@ -102,36 +120,40 @@ public class Root : MonoBehaviour
             array2[i-midPoint] = array[i];
         }
 
-        float d1, d2, d3;
+        PairOfPoints d1, d2, d3;
 
         d1 = ClosestPoint(array1);
         d2 = ClosestPoint(array2);
-        d3 = Vector3.Distance(array1[array1.Length - 1].transform.position, array2[0].transform.position);
+        d3.distance = Vector3.Distance(array1[array1.Length - 1].transform.position, array2[0].transform.position);
+        d3.point1 = array1[array1.Length - 1];
+        d3.point2 = array2[0];
 
-        if(d1 < d2)
+        if (d1.distance < d2.distance)
         {
-            if(d1 < d3)
+            if (d1.distance < d3.distance)
             {
-                dist = d1;
+                pmin = d1;
             }
             else
             {
-                dist = d3;
+                pmin = d3;
             }
         }
 
-        if (d2 < d1)
+        if (d2.distance < d1.distance)
         {
-            if (d2 < d3)
+            if (d2.distance < d3.distance)
             {
-                dist = d2;
+                pmin = d2;
             }
             else
             {
-                dist = d3;
+                pmin = d3;
             }
         }
 
-        return dist;
+        
+
+        return pmin;
     }
 }
