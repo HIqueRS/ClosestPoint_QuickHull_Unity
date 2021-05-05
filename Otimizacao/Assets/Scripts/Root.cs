@@ -93,32 +93,72 @@ public class Root : MonoBehaviour
             return pmin;
         }
 
-        //float midPoint;
-        //midPoint = (array[0].transform.position.x + array[array.Length-1].transform.position.x);
-        //if(midPoint != 0)
-        //{
-        //    midPoint = midPoint / 2;
-        //}
+        float midPoint;
+        midPoint = (array[0].transform.position.x + array[array.Length - 1].transform.position.x);
+        if (midPoint != 0)
+        {
+            midPoint = midPoint / 2;
+        }
 
-        int midPoint;
+        GameObject[] arrayAux1;
 
-        midPoint = array.Length / 2;
+        arrayAux1 = new GameObject[array.Length];
+        GameObject[] arrayAux2;
+
+        arrayAux2 = new GameObject[array.Length];
+
+        int aux1, aux2;
+
+        aux1 = aux2 = 0;
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            if(array[i].transform.position.x < midPoint)
+            {
+                arrayAux1[aux1] = array[i];
+                aux1 += 1;
+            }
+            else
+            {
+                arrayAux2[aux2] = array[i];
+                aux2 += 1;
+            }
+        }
 
         GameObject[] array1;
-        array1 = new GameObject[midPoint];
+        array1 = new GameObject[aux1];
         GameObject[] array2;
-        array2 = new GameObject[array.Length - midPoint];
+        array2 = new GameObject[aux2];
 
-
-        for (int i = 0; i < midPoint; i++)
+        for (int i = 0; i < aux1; i++)
         {
-            array1[i] = array[i]; 
+            array1[i] = arrayAux1[i];
         }
 
-        for (int i = midPoint; i < array.Length; i++)
+        for (int i = 0; i < aux2; i++)
         {
-            array2[i-midPoint] = array[i];
+            array2[i] = arrayAux2[i];
         }
+
+        //int midPoint;
+
+        //midPoint = array.Length / 2;
+
+        //GameObject[] array1;
+        //array1 = new GameObject[midPoint];
+        //GameObject[] array2;
+        //array2 = new GameObject[array.Length - midPoint];
+
+
+        //for (int i = 0; i < midPoint; i++)
+        //{
+        //    array1[i] = array[i]; 
+        //}
+
+        //for (int i = midPoint; i < array.Length; i++)
+        //{
+        //    array2[i-midPoint] = array[i];
+        //}
 
         PairOfPoints d1, d2, d3;
 
