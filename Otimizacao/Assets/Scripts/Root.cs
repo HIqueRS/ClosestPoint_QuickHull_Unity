@@ -24,8 +24,10 @@ public class Root : MonoBehaviour
             CreateArray();
 
             _pop = ClosestPoint(_points);
-            _pop.point1.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-            _pop.point2.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+           
+
+            gameObject.GetComponent<LineRenderer>().SetPosition(0, _pop.point1.gameObject.transform.position) ;
+            gameObject.GetComponent<LineRenderer>().SetPosition(1, _pop.point2.gameObject.transform.position) ;
         }
     }
 
