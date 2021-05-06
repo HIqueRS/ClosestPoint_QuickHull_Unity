@@ -7,10 +7,13 @@ public class QuickHull : MonoBehaviour
     [SerializeField] private GameObject[] _points;
     [SerializeField] private GameObject[] _convex;
     private LineRenderer _line;
+    private int _a;
     // Start is called before the first frame update
     void Start()
     {
         _line = GetComponent<LineRenderer>();
+
+        _convex = new GameObject[2];
     }
 
     // Update is called once per frame
@@ -20,7 +23,14 @@ public class QuickHull : MonoBehaviour
         {
             _points = CreateArray(_points);
             OrderArray(_points);
-            _convex = QHull(_points[0],_points[_points.Length -1],_points,_convex);
+
+            _convex = new GameObject[2];
+
+            _convex[0] = _points[0];
+            _convex[1] = _points[_points.Length - 1];
+
+            (_convex,_a) = QHull(0, _convex.Length - 1, _points, _convex,true);
+            (_convex, _a) = QHull(_convex.Length - 1, 0, _points, _convex,true);
 
             _line.positionCount = _convex.Length;
 
@@ -87,22 +97,22 @@ public class QuickHull : MonoBehaviour
                     (p2.y - p1.y) * (p3.x - p1.x));
     }
 
-    private GameObject[] QHull(GameObject p1, GameObject p2, GameObject[] points, GameObject[] convex)
+    private (GameObject[],int) QHull(int p1, int p2, GameObject[] points, GameObject[] convex, bool teste)
     {
 
         float maxDist;
         maxDist = 0;
 
-        int pos;
+        int pos,pos1;
         pos = 0;
 
         
-
+       
         for (int i = 0; i < points.Length; i++)
         {
-            if(FindSide(p1.transform.position,p2.transform.position,points[i].transform.position) > 0)
+            if (FindSide(convex[p1].transform.position, convex[p2].transform.position, points[i].transform.position) > 0)
             {
-                float dist = LineDist(p1.transform.position, p2.transform.position, points[i].transform.position);
+                float dist = LineDist(convex[p1].transform.position, convex[p2].transform.position, points[i].transform.position);
 
                 if (dist > maxDist)
                 {
@@ -112,30 +122,77 @@ public class QuickHull : MonoBehaviour
             }
         }
 
-        convex = PutOnMiddle(convex, pos, points[pos]);
+        
 
-        return convex;
+
+        if (maxDist != 0)
+        {
+            convex = PutOnMiddle(convex, p2, points[pos],teste);//posicao ta errada
+            
+
+            pos1 = p2;
+
+
+            if (p2 - 1 < 0)
+            {
+                //do fim até p2
+                (convex, pos1) = QHull(convex.Length - 1, p2, points, convex, teste);
+                
+            }
+            else
+            {
+                //faz do p2-- ate p2
+                (convex, pos1) = QHull(p2 - 1, p2, points, convex, teste);
+            }
+
+
+            if (p2 + 1 >= convex.Length)
+            {
+                //do p2 até 0
+                (convex, pos1) = QHull(p2, 0, points, convex, teste);
+                Debug.Log("a"); 
+            }
+            else
+            {
+                //do p2 até p2++
+                (convex, pos1) = QHull(p2, p2 + 1, points, convex, teste);
+                //Debug.Log("a");
+            }
+
+           
+
+
+
+        }
+       
+
+        return (convex, p2);
     }
 
-    private GameObject[] PutOnMiddle(GameObject[] array,int pos,GameObject insert)
+    private GameObject[] PutOnMiddle(GameObject[] array,int pos,GameObject insert,bool teste)// a posicao ta errada
     {
         GameObject[] arrayAux;
 
         arrayAux = new GameObject[array.Length + 1];
 
-        arrayAux[pos] = insert;
-
-        for (int i = 0; i < array.Length + 1; i++)
+        if(teste)
         {
-            if (i < pos)
+            arrayAux[pos] = insert;
+
+            for (int i = 0; i < array.Length + 1; i++)
             {
-                arrayAux[i] = array[i];
-            }
-            else if (i > pos)
-            {
-                arrayAux[i] = array[i - 1];
+                if (i < pos)
+                {
+                    arrayAux[i] = array[i];
+                }
+                else if (i > pos)
+                {
+                    arrayAux[i] = array[i - 1];
+                }
             }
         }
+
+        
 
         return arrayAux;
     }
